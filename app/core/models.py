@@ -21,6 +21,15 @@ class UserManager(BaseUserManager):
         """ Normalize the email address by making it lowercase. """
         return email.lower()
 
+    def create_superuser(self, email, password):
+        """ Creates and saves a new superuser """
+        user = self.model(email=self.normalize_email(email), password=password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save(using=self._db)
+
+        return user
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system"""
     email = models.EmailField(max_length=255, unique=True)
