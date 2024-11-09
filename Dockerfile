@@ -37,8 +37,8 @@ RUN /py/bin/pip install -r /tmp/requirements.txt
 # Install development dependencies if DEV argument is set to true
 RUN if [ "$DEV" = "true" ]; then /py/bin/pip install -r /tmp/requirements.dev.txt; fi
 
-# Copy application code into the image
-COPY ./app /app
+# Copy application code into the image and set ownership
+COPY --chown=django-user:django-user ./app /app
 
 # Switch to non-root user
 USER django-user
