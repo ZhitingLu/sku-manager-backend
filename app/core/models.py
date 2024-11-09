@@ -17,6 +17,10 @@ class UserManager(BaseUserManager):
 
         return user
 
+    def normalize_email(self, email):
+        """ Normalize the email address by making it lowercase. """
+        return email.lower()
+
 class User(AbstractBaseUser, PermissionsMixin):
     """User in the system"""
     email = models.EmailField(max_length=255, unique=True)
