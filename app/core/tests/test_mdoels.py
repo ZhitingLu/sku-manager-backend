@@ -1,8 +1,11 @@
 """
 Test for models
 """
-from django.test import TestCase
+
 from django.contrib.auth import get_user_model
+from django.test import TestCase
+
+from core import models
 
 
 class ModelTests(TestCase):
@@ -47,3 +50,19 @@ class ModelTests(TestCase):
 
         self.assertTrue(user.is_superuser)
         self.assertTrue(user.is_staff)
+
+    def test_create_medication_sku(self):
+        """Test creating a new medication sku is successful"""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'testpass123',
+        )
+        medication_sku = models.MedicationSKU.objects.create(
+            user=user,
+            medication_name="Ibuprofen",
+            presentation='Capsule',
+            dose=50,
+            unit='mg'
+        )
+
+        self.assertEqual(str(medication_sku), medication_sku.medication_name)
