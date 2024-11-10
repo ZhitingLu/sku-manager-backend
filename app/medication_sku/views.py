@@ -51,13 +51,13 @@ class MedicationSKUViewSet(viewsets.ModelViewSet):
         # Extract the list of medication SKUs from the request data
         data = request.data
 
-        serializer = serializers.MedicationSKUSerializer(data=data, many=True)
+        serializer = self.get_serializer(data=data, many=True)
         if serializer.is_valid():
             # Bulk create the medication SKUs
-            medication_skus = []
-            for item in serializer.validated_data:
-                item['user'] = request.user  # Set the user to each SKU
-                medication_skus.append(MedicationSKU(**item))
+            medication_skus = [
+                MedicationSKU(**item, user=request.user)
+                for item in serializer.validated_data
+            ]
 
             MedicationSKU.objects.bulk_create(medication_skus)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
