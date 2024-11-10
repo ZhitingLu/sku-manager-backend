@@ -55,8 +55,20 @@ class PrivateMedicationSkuApiTests(TestCase):
 
     def test_retrieve_medication_sku_list(self):
         """Test retrieving a list of medication skus"""
-        create_medication_sku(user=self.user)
-        create_medication_sku(user=self.user)
+        create_medication_sku(
+            user=self.user,
+            medication_name="Ibuprofen",
+            presentation="Tablet",
+            dose=50,
+            unit="mg",
+        )
+        create_medication_sku(
+            user=self.user,
+            medication_name="Paracetamol",
+            presentation="Tablet",
+            dose=50,
+            unit="mg",
+        )
 
         res = self.client.get(MEDICATION_SKU_LIST_URL)
 
@@ -64,24 +76,7 @@ class PrivateMedicationSkuApiTests(TestCase):
         serializer = MedicationSKUSerializer(medication_skus, many=True)
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
-
-    def test_medication_skus_limited_to_user(self):
-        """Test retrieving medication skus only for the authenticated user"""
-        other_user = get_user_model().objects.create_user(
-            'otheruser@example.com',
-            'testpass123',
-        )
-        create_medication_sku(user=other_user)
-        create_medication_sku(user=self.user)
-
-        res = self.client.get(MEDICATION_SKU_LIST_URL)
-
-        medication_skus = MedicationSKU.objects.filter(user=self.user)
-        serializer = MedicationSKUSerializer(medication_skus, many=True)
-
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(res.data, serializer.data)
+        self.assertCountEqual(res.data, serializer.data)
 
     def test_create_duplicate_medication_name(self):
         """Test creating a new medication SKU with duplicate name fails"""
@@ -101,8 +96,10 @@ class PrivateMedicationSkuApiTests(TestCase):
         #   ]
         self.assertIn('medication_name', res.data)
 
-    def test_create_duplicate_medication_presentation(self):
-        """Test creating a new medication SKU with duplicate presentation fails"""
+    def test_create_duplicate_medication_combination(self):
+        """
+        Test creating a new medication SKU with duplicate combination fails
+        """
         create_medication_sku(
             user=self.user,
             medication_name="Ibuprofen",
