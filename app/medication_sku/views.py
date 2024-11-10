@@ -13,7 +13,8 @@ from medication_sku import serializers
 
 class IsOwnerOrReadOnly(permissions.BasePermission):
     """
-    Custom permission to only allow owners to edit or delete their medication SKUs.
+    Custom permission to only allow owners to edit
+    or delete their medication SKUs.
     All users can view, but only owners can modify.
     """
 
