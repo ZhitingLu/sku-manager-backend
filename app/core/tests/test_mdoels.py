@@ -66,3 +66,50 @@ class ModelTests(TestCase):
         )
 
         self.assertEqual(str(medication_sku), medication_sku.medication_name)
+
+    def test_medication_name_unique(self):
+        """Test that medication name must be unique"""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'testpass123',
+        )
+        models.MedicationSKU.objects.create(
+            user=user,
+            medication_name="Ibuprofen",
+            presentation='Capsule',
+            dose=50,
+            unit='mg',
+        )
+
+        with self.assertRaises(Exception):  # IntegrityError will be raised
+            models.MedicationSKU.objects.create(
+                user=user,
+                medication_name="Ibuprofen",  # Duplicate name
+                presentation='Tablet',
+                dose=100,
+                unit='mg',
+            )
+
+    def test_medication_sku_combination_unique(self):
+        """Test that medication sku combination must be unique"""
+        user = get_user_model().objects.create_user(
+            'test@example.com',
+            'testpass123',
+        )
+
+        models.MedicationSKU.objects.create(
+            user=user,
+            medication_name="Ibuprofen",
+            presentation='Capsule',
+            dose=50,
+            unit='mg',
+        )
+
+        with self.assertRaises(Exception):  # IntegrityError will be raised
+            models.MedicationSKU.objects.create(
+                user=user,
+                medication_name="Ibuprofen",  # Same name
+                presentation='Capsule',  # Same presentation
+                dose=50,  # Same dose
+                unit='mg',  # Same unit
+            )
