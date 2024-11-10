@@ -36,6 +36,11 @@ def create_medication_sku(user, **params):
     return medication_sku
 
 
+def create_user(**params):
+    """Create a new user"""
+    return get_user_model().objects.create_user(**params)
+
+
 class PublicMedicationSkuApiTests(TestCase):
     """Test unauthenticated API requests"""
 
@@ -54,10 +59,9 @@ class PrivateMedicationSkuApiTests(TestCase):
 
     def setUp(self):
         self.client = APIClient()
-        self.user = get_user_model().objects.create_user(
-            'user@example.com',
-            'testpass123',
-        )
+        self.user = create_user(email='user@example.com',
+                                password='testpass123',
+                                )
         self.client.force_authenticate(self.user)
 
     def test_retrieve_medication_sku_list(self):
@@ -151,3 +155,31 @@ class PrivateMedicationSkuApiTests(TestCase):
 
         serializer = MedicationSKUDetailSerializer(medication_sku)
         self.assertEqual(res.data, serializer.data)
+
+    def test_partial_update(self):
+        """Test updating a medication SKU"""
+        original_medication_name = 'Original name'
+        original_dose = 50
+        original_unit = 'mg'
+        medication_sku = create_medication_sku(
+            user=self.user,
+            medication_name=original_medication_name,
+            presentation='Original presentation',
+            dose=original_dose,
+            unit=original_unit,
+        )
+
+        payload = {
+            'presentation': 'New presentation',
+        }
+        url = detail_url(medication_sku.id)
+        res = self.client.patch(url, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        medication_sku.refresh_from_db()
+        self.assertEqual(medication_sku.user, self.user)
+        self.assertEqual(medication_sku.medication_name,
+                         original_medication_name)
+        self.assertEqual(medication_sku.presentation, payload['presentation'])
+        self.assertEqual(medication_sku.dose, original_dose)
+        self.assertEqual(medication_sku.unit, original_unit)
