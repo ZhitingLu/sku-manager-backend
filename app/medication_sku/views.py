@@ -23,3 +23,7 @@ class MedicationSKUViewSet(viewsets.ModelViewSet):
 
         # For individual medication SKU details
         return serializers.MedicationSKUDetailSerializer
+
+    def perform_create(self, serializer):
+        """Create a new medication sku"""
+        serializer.save(user=self.request.user)
