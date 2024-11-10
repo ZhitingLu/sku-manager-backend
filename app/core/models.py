@@ -1,10 +1,11 @@
 """
 Database models
 """
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import (AbstractBaseUser,
                                         BaseUserManager,
                                         PermissionsMixin)
+from django.db import models
 
 
 class UserManager(BaseUserManager):
@@ -47,3 +48,41 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()  # custom manager for handling User model queries
 
     USERNAME_FIELD = 'email'
+
+
+class MedicationSKU(models.Model):
+    """
+    Medication SKU Object
+
+    A MedicationSKU is unique by:
+    1. Global uniqueness of the `medication_name`.
+    2. A unique combination of:
+
+     - `medication_name`,
+     - `presentation`,
+     - `dose`,
+     - and `unit`.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+    medication_name = models.CharField(max_length=255, unique=True)
+    presentation = models.CharField(max_length=255)
+    dose = models.PositiveIntegerField()
+    unit = models.CharField(max_length=50)
+
+    class Meta:
+        unique_together = (
+            (
+                'medication_name',
+                'presentation',
+                'dose',
+                'unit'
+            ),
+        )
+        verbose_name = 'Medication SKU'
+        verbose_name_plural = 'Medication SKUs'
+
+    def __str__(self):
+        return self.medication_name
