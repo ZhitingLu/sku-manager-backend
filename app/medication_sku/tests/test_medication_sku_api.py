@@ -85,6 +85,22 @@ class PrivateMedicationSkuApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertCountEqual(res.data, serializer.data)
 
+    def test_create_medication_sku(self):
+        """Test creating a new medication SKU"""
+        payload = {
+            'medication_name': 'Aspirin',
+            'presentation': 'Tablet',
+            'dose': 50,
+            'unit': 'mg',
+        }
+        res = self.client.post(MEDICATION_SKU_LIST_URL, payload)
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        medication_sku = MedicationSKU.objects.get(id=res.data['id'])
+        for k, v in payload.items():
+            self.assertEqual(getattr(medication_sku, k), v)
+        self.assertEqual(medication_sku.user, self.user)
+
     def test_create_duplicate_medication_name(self):
         """Test creating a new medication SKU with duplicate name fails"""
         create_medication_sku(user=self.user, medication_name="Ibuprofen")
