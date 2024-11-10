@@ -183,3 +183,29 @@ class PrivateMedicationSkuApiTests(TestCase):
         self.assertEqual(medication_sku.presentation, payload['presentation'])
         self.assertEqual(medication_sku.dose, original_dose)
         self.assertEqual(medication_sku.unit, original_unit)
+
+
+def test_full_update(self):
+    """Test fully updating a medication SKU"""
+    medication_sku = create_medication_sku(
+        user=self.user,
+        medication_name="Sample name",
+        presentation="Tablet",
+        dose=50,
+        unit="mg",
+    )
+
+    payload = {
+        'medication_name': 'New name',
+        'presentation': 'New presentation',
+        'dose': 100,
+        'unit': 'mg',
+    }
+    url = detail_url(medication_sku.id)
+    res = self.client.put(url, payload)
+
+    self.assertEqual(res.status_code, status.HTTP_200_OK)
+    medication_sku.refresh_from_db()
+    for k, v in payload.items():
+        self.assertEqual(getattr(medication_sku, k), v)
+    self.assertEqual(medication_sku.user, self.user)
