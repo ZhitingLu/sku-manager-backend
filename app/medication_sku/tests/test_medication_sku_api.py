@@ -209,3 +209,32 @@ def test_full_update(self):
     for k, v in payload.items():
         self.assertEqual(getattr(medication_sku, k), v)
     self.assertEqual(medication_sku.user, self.user)
+
+
+def test_update_user_returns_error(self):
+    """Test updating a medication SKU's user returns error"""
+    new_user = create_user(email='user@example.com', password='testpass123')
+    medication_sku = create_medication_sku(user=self.user)
+
+    payload = {
+        'user': new_user.id,
+    }
+
+    url = detail_url(medication_sku.id)
+    self.client.put(url, payload)
+
+    medication_sku.refresh_from_db()
+    self.assertEqual(medication_sku.user, self.user)
+
+
+def test_delete_medication_sku(self):
+    """Test deleting a medication SKU successfully"""
+    medication_sku = create_medication_sku(user=self.user)
+
+    url = detail_url(medication_sku.id)
+    res = self.client.delete(url)
+
+    self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+    self.assertFalse(MedicationSKU.objects.filter(
+        id=medication_sku.id
+    ).exists())
