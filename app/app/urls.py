@@ -30,4 +30,6 @@ urlpatterns = [
          name='api-docs',
          ),
     path('api/user/', include('user.urls')),
+    path('api/medication_sku/', include('medication_sku.urls',
+                                        namespace='medication_sku')),
 ]
