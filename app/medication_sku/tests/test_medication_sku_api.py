@@ -8,11 +8,15 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import MedicationSKU
-
-from medication_sku.serializers import MedicationSKUSerializer
+from medication_sku.serializers import (MedicationSKUSerializer,
+                                        MedicationSKUDeatilSerializer)
 
 MEDICATION_SKU_LIST_URL = reverse('medication_sku:medication_sku-list')
+
+
+def detail_url(medication_sku_id):
+    """Create and return a medication SKU detail URL"""
+    return reverse('medication_sku:medication-sku-detail', args=[medication_sku_id])
 
 
 def create_medication_sku(user, **params):
@@ -118,3 +122,13 @@ class PrivateMedicationSkuApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('medication_name', res.data)
+
+    def test_retrieve_medication_sku_detail(self):
+        """Test retrieving a medication SKU detail"""
+        medication_sku = create_medication_sku(user=self.user)
+
+        url = detail_url(medication_sku.id)
+        res = self.client.get(url)
+
+        serializer = MedicationSKUDeatilSerializer(medication_sku)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
