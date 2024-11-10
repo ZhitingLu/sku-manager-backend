@@ -238,3 +238,36 @@ def test_delete_medication_sku(self):
     self.assertFalse(MedicationSKU.objects.filter(
         id=medication_sku.id
     ).exists())
+
+
+def test_bulk_create_medication_skus(self):
+    """Test bulk creating medication SKUs"""
+    payload = [
+        {
+            'medication_name': 'Unique Aspirin',
+            'presentation': 'Tablet',
+            'dose': 50,
+            'unit': 'mg'
+        },
+        {
+            'medication_name': 'Unique Amoxicillin',
+            'presentation': 'Capsule',
+            'dose': 500,
+            'unit': 'mg'
+        }
+    ]
+
+    res = self.client.post('/medication_skus/bulk_create/', payload)
+
+    self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+    self.assertEqual(len(res.data), 2)
+
+    # Check that both SKUs were created
+    for item in payload:
+        self.assertTrue(MedicationSKU.objects.filter(
+            medication_name=item['medication_name'],
+            presentation=item['presentation'],
+            dose=item['dose'],
+            unit=item['unit'],
+            user=self.user
+        ).exists())
