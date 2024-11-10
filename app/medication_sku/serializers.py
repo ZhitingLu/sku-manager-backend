@@ -13,3 +13,10 @@ class MedicationSKUSerializer(serializers.ModelSerializer):
         model = MedicationSKU
         fields = ['id', 'medication_name', 'presentation', 'dose', 'unit']
         read_only_fields = ['id']
+
+
+class MedicationSKUDetailSerializer(MedicationSKUSerializer):
+    """Serializer for MedicationSKU detail object"""
+
+    class Meta(MedicationSKUSerializer.Meta):
+        fields = MedicationSKUSerializer.Meta.fields
