@@ -57,8 +57,8 @@ docker compose up
 ```
 
 ### 3. Apply Migrations
-After starting the application, open another terminal and run:
-(just in case)
+After starting the application, open another terminal and run (just in case):
+
 ```bash
 # bash
 docker compose run --rm app sh -c "python manage.py migrate"
@@ -113,3 +113,44 @@ docker compose run --rm app sh -c "python manage.py createsuperuser"
 ```
 docker compose build
 ```
+
+### How to test the APIs as an authenticated user
+When the application is running, please head to the Swagger UI: http://localhost:8000/api/docs/
+
+Step 1: create a user
+
+![create_user](https://github.com/user-attachments/assets/a79dc5fc-c495-4f2a-a1e4-e0fbe981f4e7)
+
+Step 2: Login the user with the creadentials just created
+
+![login_user](https://github.com/user-attachments/assets/9fe77f6d-e43c-4d9f-917e-4de5ac83ec66)
+
+Step 3: Copy the returned token value
+
+![user_token](https://github.com/user-attachments/assets/e3e53b7e-6990-4370-8513-50bdc97b432d)
+
+
+Step 4: Authorize the user
+
+![authorize_user](https://github.com/user-attachments/assets/3fa1bc6e-e5dd-41a2-b954-ba595db8231f)
+
+
+Pass the token copied from Step 3 with 'Token ' in front
+
+![pass_token](https://github.com/user-attachments/assets/ca083b05-5a69-4f3c-9200-a643c2756495)
+
+
+Step 5: Create a new medication sku as an authenticated user
+
+![create_sku](https://github.com/user-attachments/assets/c6a48d7d-66be-4705-ba7e-37cbfb350262)
+
+
+Created:
+![sku_created](https://github.com/user-attachments/assets/a832b464-e766-40ac-8b76-e0a6a465a5e2)
+
+
+
+
+
+
+
