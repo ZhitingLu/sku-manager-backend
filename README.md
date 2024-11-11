@@ -92,11 +92,13 @@ docker compose run --rm app sh -c "python manage.py test && flake8"
 ### 📂 Folder Structure
 ```
 .
+├── .github/               # GitHub Actions
+│   ├── workflows/         # Workflows
 ├── app/                   # Main Django application code
-│   ├── app/                 # Main app for configurations and settings
-│   ├── core/                # Core app containing foundational models
-│   ├── user/                # Custom user management app
-│   ├── medication_sku/      # Medication SKU API app
+│   ├── app/               # Main app for configurations and settings
+│   ├── core/              # Core app containing foundational models
+│   ├── user/              # Custom user management app
+│   ├── medication_sku/    # Medication SKU API app
 ├── docker-compose.yml     # Docker Compose configuration
 ├── Dockerfile             # Docker build instructions
 ├── requirements.txt       # Production dependencies
