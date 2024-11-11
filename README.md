@@ -41,8 +41,9 @@ git clone git@github.com:ZhitingLu/medication_sku.git
 cd medication-sku
 ```
 
-### 2. Environment Setup
+### 2. Environment Setup (Optional, you can run the Docker container without this step)
 Create a .env file in the root directory and provide the necessary environment variables:
+
 
 ```bash
 # .env
