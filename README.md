@@ -41,21 +41,7 @@ git clone git@github.com:ZhitingLu/medication_sku.git
 cd medication-sku
 ```
 
-### 2. Environment Setup (Optional, you can run the Docker container without this step)
-Create a .env file in the root directory and provide the necessary environment variables:
-
-
-```bash
-# .env
-DEBUG=True
-SECRET_KEY=your-secret-key
-DB_HOST=db
-DB_PORT=5432
-DB_NAME=medication_sku_db
-DB_USER=your-db-user
-DB_PASSWORD=your-db-password
-```
-### 3. Build and Run the Application with Docker
+### 2. Build and Run the Application with Docker
 Step 1: Build the Docker Container
 
 ```bash
@@ -70,15 +56,15 @@ Step 2: Start the Application
 docker compose up
 ```
 
-### 4. Apply Migrations
+### 3. Apply Migrations
 After starting the application, open another terminal and run:
-
+(just in case)
 ```bash
 # bash
 docker compose run --rm app sh -c "python manage.py migrate"
 ```
 
-### 5. Access the Application
+### 4. Access the Application
 API: The application will be available at http://localhost:8000/.
 Admin Panel: Visit http://localhost:8000/admin/ to access the admin panel.
 
