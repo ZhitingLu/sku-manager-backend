@@ -14,6 +14,9 @@ A RESTful API to manage medication SKUs, allowing users to perform CRUD operatio
   - Only authenticated users can partial/full update and delete the medication SKUs.
 - **API Documentation**: 
   - Detailed descriptions of each API endpoint.
+- **GitHub Actions for CI/CD**:
+  - Code Quality Checks: Automatically run linter and formatter on every push or pull request.
+  - Unit and Integration Tests: Run automated tests using Python test framework to ensure code reliability
 
 ## 🚀 Tech Stack
 - **🌐 Django**: A high-level web framework for rapid and secure development.
