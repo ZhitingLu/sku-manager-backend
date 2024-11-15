@@ -71,6 +71,7 @@ class MedicationSKU(models.Model):
     presentation = models.CharField(max_length=255)
     dose = models.PositiveIntegerField()
     unit = models.CharField(max_length=50)
+    tags = models.ManyToManyField("Tag")
 
     class Meta:
         unique_together = (
@@ -86,3 +87,15 @@ class MedicationSKU(models.Model):
 
     def __str__(self):
         return self.medication_name
+
+
+class Tag(models.Model):
+    """Tag for filtering medications"""
+    name = models.CharField(max_length=255)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return self.name
