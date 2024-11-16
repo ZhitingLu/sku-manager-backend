@@ -8,7 +8,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from core.models import MedicationSKU
+from core.models import (MedicationSKU,
+                         Tag)
 from medication_sku.serializers import (MedicationSKUSerializer,
                                         MedicationSKUDetailSerializer)
 
@@ -288,6 +289,10 @@ class MedicationSKUOwnershipTests(TestCase):
             password='testpass123'
         )
 
+        # Clear previous medication SKUs if any for clean test state
+        MedicationSKU.objects.filter(user=self.user1).delete()
+        MedicationSKU.objects.filter(user=self.user2).delete()
+
         # Create a medication SKU for user1
         self.medication_sku1 = create_medication_sku(
             user=self.user1,
@@ -350,3 +355,70 @@ class MedicationSKUOwnershipTests(TestCase):
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_create_medication_sku_new_tags(self):
+        """Test creating a new medication SKU with new tags"""
+        self.client.force_authenticate(user=self.user1)
+        # Clear previous medication SKUs if any for clean test state
+        MedicationSKU.objects.filter(user=self.user1).delete()
+
+        payload = {
+            'medication_name': 'Some medication name 1',
+            'presentation': 'Tablet',
+            'dose': 50,
+            'unit': 'mg',
+            'tags': [
+                {'name': 'Anti-inflammatory',
+                 },
+                {'name': 'Antidepressant',
+                 }
+            ]
+        }
+        res = self.client.post(MEDICATION_SKU_LIST_URL, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        medication_skus = MedicationSKU.objects.filter(user=self.user1)
+
+        self.assertEqual(medication_skus.count(), 1)
+        medication_sku = medication_skus.first()
+        self.assertEqual(medication_sku.tags.count(), 2)
+        for tag in payload['tags']:
+            exists = medication_sku.tags.filter(
+                name=tag['name'],
+                user=self.user1,
+            ).exists()
+            self.assertTrue(exists)
+
+    def test_create_medication_sku_with_existing_tags(self):
+        """Test creating a new medication SKU with existing tags"""
+        self.client.force_authenticate(user=self.user1)
+        # Clear previous medication SKUs if any for clean test state
+        MedicationSKU.objects.filter(user=self.user1).delete()
+
+        tag_anesthetic = Tag.objects.create(user=self.user1, name='Anesthetic')
+        payload = {
+            'medication_name': 'Some medication name 2',
+            'presentation': 'Tablet',
+            'dose': 50,
+            'unit': 'mg',
+            'tags': [{
+                'name': 'Anti-inflammatory',
+            },
+                {'name': 'Anesthetic', }]
+        }
+        res = self.client.post(MEDICATION_SKU_LIST_URL, payload, format='json')
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        medication_skus = MedicationSKU.objects.filter(user=self.user1)
+        self.assertEqual(medication_skus.count(), 1)
+        medication_sku = medication_skus.first()
+        self.assertEqual(medication_sku.tags.count(), 2)
+        # test the existing tag is assigned to the medication_sku
+        # instead of creating a duplicated tag
+        self.assertIn(tag_anesthetic, medication_sku.tags.all())
+        for tag in payload['tags']:
+            exists = medication_sku.tags.filter(
+                name=tag['name'],
+                user=self.user1,
+            ).exists()
+            self.assertTrue(exists)
