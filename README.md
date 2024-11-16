@@ -151,6 +151,10 @@ Step 5: Create a new medication sku as an authenticated user
 Created:
 ![sku_created](https://github.com/user-attachments/assets/a832b464-e766-40ac-8b76-e0a6a465a5e2)
 
+Updates:
+1. Added 'tags' API endpoints
+2. Nested '/medication_skus/' and '/tags/' endpoints inside '/medication_sku/':
+
 
 
 
