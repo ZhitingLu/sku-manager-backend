@@ -1,13 +1,16 @@
 """
 Views for the recipe APIs
 """
-from rest_framework import viewsets, status, permissions
+from rest_framework import (viewsets,
+                            status,
+                            permissions)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from core.models import MedicationSKU
+from core.models import (MedicationSKU,
+                         Tag)
 from medication_sku import serializers
 
 
@@ -64,3 +67,16 @@ class MedicationSKUViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TagViewSet(viewsets.ModelViewSet):
+    """View for manage the tag APIs"""
+
+    serializer_class = serializers.TagSerializer
+    queryset = Tag.objects.all()
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated, IsOwnerOrReadOnly]
+
+    def get_queryset(self):
+        """Return all tags, ordered by descending name"""
+        return self.queryset.order_by('-name')
