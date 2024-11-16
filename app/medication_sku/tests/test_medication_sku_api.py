@@ -422,3 +422,62 @@ class MedicationSKUOwnershipTests(TestCase):
                 user=self.user1,
             ).exists()
             self.assertTrue(exists)
+
+    def test_create_tag_on_update(self):
+        """Test creating a new tag when updating a medication SKU"""
+        self.client.force_authenticate(user=self.user1)
+        medication_sku = create_medication_sku(user=self.user1)
+        payload = {
+            'tags': [
+                {'name': 'Sleep Aid'}
+            ]
+        }
+        url = detail_url(medication_sku.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        new_tag = Tag.objects.get(user=self.user1, name='Sleep Aid')
+        self.assertIn(new_tag, medication_sku.tags.all())
+
+    def test_update_medication_sku_assign_tag(self):
+        """Test assigning an existing tag when updating a medication SKU"""
+        self.client.force_authenticate(user=self.user1)
+        # create a new tag
+        # create a new medication_sku
+        # add the crated tag to the created medication sku
+        tag_vaccine = Tag.objects.create(user=self.user1, name='Vaccine')
+        medication_sku = create_medication_sku(user=self.user1)
+        medication_sku.tags.add(tag_vaccine)
+
+        # create another tag
+        # change the 'Vaccine' tag to 'Sedative' through the payload
+        # send a HTTP PATCH with the payload
+        tag_sedative = Tag.objects.create(user=self.user1, name='Sedative')
+        payload = {
+            'tags': [{
+                'name': 'Sedative',
+            }]
+        }
+        url = detail_url(medication_sku.id)
+        res = self.client.patch(url, payload, format='json')
+
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn(tag_sedative, medication_sku.tags.all())
+        self.assertNotIn(tag_vaccine, medication_sku.tags.all())
+
+
+def test_clear_medication_sku_tags(self):
+    """Test clearing medication SKU tags"""
+    self.client.force_authenticate(user=self.user1)
+    tag = Tag.objects.create(user=self.user1, name='Anesthetic')
+    medication_sku = create_medication_sku(user=self.user1)
+    medication_sku.tags.add(tag)
+
+    payload = {
+        'tags': []
+    }
+    url = detail_url(medication_sku.id)
+    res = self.client.patch(url, payload, format='json')
+
+    self.assertEqual(res.status_code, status.HTTP_200_OK)
+    self.assertEqual(medication_sku.tags.count(), 0)
