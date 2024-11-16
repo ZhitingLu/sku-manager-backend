@@ -13,12 +13,12 @@ from core.models import (MedicationSKU,
 from medication_sku.serializers import (MedicationSKUSerializer,
                                         MedicationSKUDetailSerializer)
 
-MEDICATION_SKU_LIST_URL = reverse('medication_sku:medication_sku-list')
+MEDICATION_SKU_LIST_URL = reverse('medication_sku:medication_skus-list')
 
 
 def detail_url(medication_sku_id):
     """Create and return a medication SKU detail URL"""
-    return reverse('medication_sku:medication_sku-detail',
+    return reverse('medication_sku:medication_skus-detail',
                    args=[medication_sku_id]
                    )
 
