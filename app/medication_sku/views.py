@@ -52,19 +52,33 @@ class MedicationSKUViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'], url_path='bulk_create')
     def bulk_create(self, request):
-        """Bulk create medication SKUs"""
-        # Extract the list of medication SKUs from the request data
+        """Bulk create medication SKUs with tags"""
         data = request.data
-
         serializer = self.get_serializer(data=data, many=True)
-        if serializer.is_valid():
-            # Bulk create the medication SKUs
-            medication_skus = [
-                MedicationSKU(**item, user=request.user)
-                for item in serializer.validated_data
-            ]
 
-            MedicationSKU.objects.bulk_create(medication_skus)
+        if serializer.is_valid():
+            skus_data = serializer.validated_data
+            medication_skus = []
+
+            # Create MedicationSKU instances
+            for item in skus_data:
+                tags = item.pop('tags', [])
+                medication_sku = MedicationSKU(**item, user=request.user)
+                medication_skus.append((medication_sku, tags))
+
+            # Bulk create SKUs without tags first
+            created_skus = MedicationSKU.objects.bulk_create(
+                [sku for sku, _ in medication_skus]
+            )
+
+            # Assign tags to created SKUs
+            for medication_sku, tags in zip(created_skus, medication_skus):
+                self.get_serializer()._get_or_create_tags(
+                    tags[1],
+                    medication_sku
+                )
+
+            # Return serialized response
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
