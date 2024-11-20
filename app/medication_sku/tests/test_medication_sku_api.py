@@ -244,32 +244,33 @@ class PrivateMedicationSkuApiTests(TestCase):
             id=medication_sku.id
         ).exists())
 
+    def test_bulk_create_medication_skus(self):
+        """Test bulk creating medication SKUs"""
+        self.client.force_authenticate(user=self.user)
 
-# TODO test to be fixed :/
-# def test_bulk_create_medication_skus(self):
-#     """Test bulk creating medication SKUs"""
-#     payload = {
-#         "medication_skus": [
-#             {
-#                 'medication_name': 'Unique Aspirin',
-#                 'presentation': 'Tablet',
-#                 'dose': 50,
-#                 'unit': 'mg'
-#             },
-#             {
-#                 'medication_name': 'Unique Amoxicillin',
-#                 'presentation': 'Capsule',
-#                 'dose': 500,
-#                 'unit': 'mg'
-#             }
-#         ]
-#     }
-#
-#     res = self.client.post('/medication_sku/bulk_create/',
-#     payload, format='json')
-#
-#     self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-#     self.assertEqual(len(res.data), 2)
+        payload = [
+                {
+                    'medication_name': 'Unique Aspirin',
+                    'presentation': 'Tablet',
+                    'dose': 50,
+                    'unit': 'mg'
+                },
+                {
+                    'medication_name': 'Unique Amoxicillin',
+                    'presentation': 'Capsule',
+                    'dose': 500,
+                    'unit': 'mg'
+                }
+            ]
+
+        res = self.client.post(
+            '/api/medication_sku/medication_skus/bulk_create/',
+            payload,
+            format='json'
+        )
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(res.data), 2)
 
 
 class MedicationSKUOwnershipTests(TestCase):
