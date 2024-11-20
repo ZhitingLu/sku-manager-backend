@@ -16,20 +16,12 @@ jobs:
         with: 
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-          
+
     # step 2: Checkout the repository
       - name: Checkout
         uses: actions/checkout@v4
 
-    # step 3: Set up AWS env variables
-      - name: Set up aws env variables
-        env: 
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRETS_ACCESS_KEY: ${{ secrets.AWS_SECRETS_ACCESS_KEY }}
-        AWS_STORAGE_BUCKET_NAME: ${{ secrets.AWS_STORAGE_BUCKET_NAME }}
-        AWS_S3_REGION_NAME: ${{ secrets.AWS_S3_REGION_NAME }}
-
-    # step 4: Run tests
+    # step 3: Run tests
       - name: Test
         run: docker compose run --rm app sh -c "python manage.py wait_for_db && python manage.py test"
       - name: Lint
