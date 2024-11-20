@@ -272,6 +272,50 @@ class PrivateMedicationSkuApiTests(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(len(res.data), 2)
 
+    def test_bulk_create_medication_skus_with_tags(self):
+        """Test bulk creating medication SKUs"""
+        self.client.force_authenticate(user=self.user)
+
+        payload = [
+                {
+                    'medication_name': 'Unique Medication 1',
+                    'presentation': 'Tablet',
+                    'dose': 50,
+                    'unit': 'mg',
+                    'tags': [
+                        {
+                            'name': 'Anti-inflammatory',
+                        },
+                        {
+                            'name': 'Antidepressant',
+                        }
+                    ]
+                },
+                {
+                    'medication_name': 'Unique Medication 2',
+                    'presentation': 'Capsule',
+                    'dose': 500,
+                    'unit': 'mg',
+                    'tags': [
+                        {
+                            'name': 'Anti-inflammatory',
+                        },
+                        {
+                            'name': 'Antidepressant',
+                        }
+                    ]
+                }
+            ]
+
+        res = self.client.post(
+            '/api/medication_sku/medication_skus/bulk_create/',
+            payload,
+            format='json'
+        )
+
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(len(res.data), 2)
+
 
 class MedicationSKUOwnershipTests(TestCase):
     """Test ownership permissions for medication SKU CRUD operations"""
