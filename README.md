@@ -1,6 +1,6 @@
 # Medication SKU API
 
-A RESTful API to manage medication SKUs, allowing users to perform CRUD operations and bulk-upload medication SKUs to the catalogue. This project meets the requirements to manage medication SKUs via APIs and supports authentication, user-specific data, and bulk operations.
+This project is a lightweight backend MVP built with Django REST Framework (DRF), designed to handle API and database management with ease. It features full CRUD functionality, including support for single and bulk SKU uploads, making it a flexible starting point for any backend application. The project is test-driven, uses PostgreSQL for data storage, and is fully containerized with Docker for smooth deployment. Swagger is included for clear API documentation, and CI/CD is automated with GitHub Actions. It's a solid foundation for quickly building and scaling backend systems.
 
 ## Features
 
